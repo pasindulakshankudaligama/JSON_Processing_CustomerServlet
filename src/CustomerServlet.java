@@ -1,3 +1,5 @@
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -36,19 +38,33 @@ public class CustomerServlet extends HttpServlet {
 
             //Initialize the connection
             Class.forName("com.mysql.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "sanu");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "ijse");
             ResultSet rst = connection.prepareStatement("select * from Customer").executeQuery();
             String allRecords = "";
             // Access the records and generate a json object
             while (rst.next()) {
-                String id = rst.getString(1);
+                JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+
+                JsonArrayBuilder object = Json.createArrayBuilder();
+
+                object.add(Integer.parseInt("id"),rst.getString(1));
+                object.add(Integer.parseInt("name"),rst.getString(2));
+                object.add(Integer.parseInt("address"),rst.getString(3));
+                object.add(Integer.parseInt("salary"),rst.getString(4));
+
+
+               /* String id = rst.getString(1);
                 String name = rst.getString(2);
                 String address = rst.getString(3);
-                double salary = rst.getDouble(4);
+                double salary = rst.getDouble(4);*/
 
                 //Convert one record for json
-                String customer = "{\"id\":\"" + id + "\",\"name\":\"" + name + "\",\"address\":\"" + address + "\",\"salary\":" + salary + "},";
-                allRecords = allRecords + customer;
+                /*String customer = "{\"id\":\"" + id + "\",\"name\":\"" + name + "\",\"address\":\"" + address + "\",\"salary\":" + salary + "},";
+                allRecords = allRecords + customer;*/
+
+                arrayBuilder.add(object.build());
+                PrintWriter writer = resp.getWriter();
+                writer.print(arrayBuilder.build());
             }
             //Output of allRecords for now
             //{id:C001,name:Dasun,address:Galle,salary:1000},{id:C001,name:Dasun,address:Galle,salary:1000},
@@ -87,7 +103,7 @@ public class CustomerServlet extends HttpServlet {
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "sanu");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "ijse");
 
             PreparedStatement pstm = connection.prepareStatement("Insert into Customer values(?,?,?,?)");
             pstm.setObject(1, customerID);
