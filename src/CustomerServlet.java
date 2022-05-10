@@ -43,17 +43,17 @@ public class CustomerServlet extends HttpServlet {
             while (rst.next()) {
 
 
-                    String id = rst.getString(1);
-                    String name = rst.getString(2);
-                    String address = rst.getString(3);
-                    double salary = rst.getDouble(4);
+                String id = rst.getString(1);
+                String name = rst.getString(2);
+                String address = rst.getString(3);
+                double salary = rst.getDouble(4);
 
-                    JsonObjectBuilder object = Json.createObjectBuilder();
+                JsonObjectBuilder object = Json.createObjectBuilder();
 
-                    object.add("id",id);
-                    object.add("name",name);
-                    object.add("address",address);
-                    object.add("salary",salary);
+                object.add("id", id);
+                object.add("name", name);
+                object.add("address", address);
+                object.add("salary", salary);
 
 
                /* String id = rst.getString(1);
@@ -73,9 +73,9 @@ public class CustomerServlet extends HttpServlet {
             PrintWriter writer = resp.getWriter();
 
             JsonObjectBuilder response = Json.createObjectBuilder();
-            response.add("status","200");
-            response.add("message","done");
-            response.add("data",arrayBuilder.build());
+            response.add("status", "200");
+            response.add("message", "done");
+            response.add("data", arrayBuilder.build());
 
             writer.print(response.build());
             //Output of allRecords for now
@@ -88,7 +88,7 @@ public class CustomerServlet extends HttpServlet {
             String finalJson = "[" + allRecords.substring(0, allRecords.length() - 1) + "]";
 
             //Then print it as the response
-           // PrintWriter writer = resp.getWriter();
+            // PrintWriter writer = resp.getWriter();
             writer.write(finalJson); //Possible response types -> //text //xml //html //json
 
             //            {
@@ -127,9 +127,9 @@ public class CustomerServlet extends HttpServlet {
 
             if (pstm.executeUpdate() > 0) {
                 JsonObjectBuilder response = Json.createObjectBuilder();
-                response.add("status",200);
-                response.add("message","Successfully Added");
-                response.add("data","");
+                response.add("status", 200);
+                response.add("message", "Successfully Added");
+                response.add("data", "");
                 writer.print(response.build());
             }
 //            {
@@ -140,16 +140,18 @@ public class CustomerServlet extends HttpServlet {
 
         } catch (ClassNotFoundException e) {
             //resp.sendError(500, e.getMessage());
-           JsonObjectBuilder response = Json.createObjectBuilder();
-            response.add("status",500);
-            response.add("message","Error");
-            response.add("data",e.getLocalizedMessage());
+            JsonObjectBuilder response = Json.createObjectBuilder();
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.add("status", 500);
+            response.add("message", "Error");
+            response.add("data", e.getLocalizedMessage());
             e.printStackTrace();
         } catch (SQLException throwables) {
             JsonObjectBuilder response = Json.createObjectBuilder();
-            response.add("status",500);
-            response.add("message","Error");
-            response.add("data",throwables.getLocalizedMessage());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.add("status", 500);
+            response.add("message", "Error");
+            response.add("data", throwables.getLocalizedMessage());
             throwables.printStackTrace();
             //resp.sendError(500, throwables.getMessage());
         }
