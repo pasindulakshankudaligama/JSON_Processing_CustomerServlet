@@ -111,6 +111,7 @@ public class CustomerServlet extends HttpServlet {
         String customerName = req.getParameter("customerName");
         String customerAddress = req.getParameter("customerAddress");
         String salary = req.getParameter("customerSalary");
+        PrintWriter writer = resp.getWriter();
         System.out.println(customerID + " " + customerName + " " + customerAddress + " " + salary);
 
         try {
@@ -122,11 +123,14 @@ public class CustomerServlet extends HttpServlet {
             pstm.setObject(2, customerName);
             pstm.setObject(3, customerAddress);
             pstm.setObject(4, salary);
-            boolean b = pstm.executeUpdate() > 0;
-            PrintWriter writer = resp.getWriter();
 
-            if (b) {
-                writer.write("Customer Added");
+
+            if (pstm.executeUpdate() > 0) {
+                JsonObjectBuilder response = Json.createObjectBuilder();
+                response.add("status",200);
+                response.add("message","Successfully Added");
+                response.add("data","");
+                writer.print(response.build());
             }
 //            {
 //                "data": "",
@@ -135,11 +139,19 @@ public class CustomerServlet extends HttpServlet {
 //            }
 
         } catch (ClassNotFoundException e) {
+            //resp.sendError(500, e.getMessage());
+           JsonObjectBuilder response = Json.createObjectBuilder();
+            response.add("status",500);
+            response.add("message","Error");
+            response.add("data",e.getLocalizedMessage());
             e.printStackTrace();
-            resp.sendError(500, e.getMessage());
         } catch (SQLException throwables) {
+            JsonObjectBuilder response = Json.createObjectBuilder();
+            response.add("status",500);
+            response.add("message","Error");
+            response.add("data",throwables.getLocalizedMessage());
             throwables.printStackTrace();
-            resp.sendError(500, throwables.getMessage());
+            //resp.sendError(500, throwables.getMessage());
         }
     }
 
