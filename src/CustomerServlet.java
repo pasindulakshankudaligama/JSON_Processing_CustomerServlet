@@ -1,5 +1,6 @@
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,11 +22,6 @@ public class CustomerServlet extends HttpServlet {
     //This method can be used to get customer information.
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-     /*   String customerID = req.getParameter("customerID"); // name value from the input field
-        String customerName = req.getParameter("customerName");
-        String customerAddress = req.getParameter("customerAddress");
-        String salary = req.getParameter("customerSalary");
-        System.out.println(customerID+" "+customerName+" "+customerAddress+" "+salary+" From Get");*/
 
         try {
             //The Media Type of the Content of the response
@@ -41,16 +37,23 @@ public class CustomerServlet extends HttpServlet {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "ijse");
             ResultSet rst = connection.prepareStatement("select * from Customer").executeQuery();
             String allRecords = "";
+
+            JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
             // Access the records and generate a json object
             while (rst.next()) {
-                JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
 
-                JsonArrayBuilder object = Json.createArrayBuilder();
 
-                object.add(Integer.parseInt("id"),rst.getString(1));
-                object.add(Integer.parseInt("name"),rst.getString(2));
-                object.add(Integer.parseInt("address"),rst.getString(3));
-                object.add(Integer.parseInt("salary"),rst.getString(4));
+                    String id = rst.getString(1);
+                    String name = rst.getString(2);
+                    String address = rst.getString(3);
+                    double salary = rst.getDouble(4);
+
+                    JsonObjectBuilder object = Json.createObjectBuilder();
+
+                    object.add("id",id);
+                    object.add("name",name);
+                    object.add("address",address);
+                    object.add("salary",salary);
 
 
                /* String id = rst.getString(1);
@@ -63,9 +66,12 @@ public class CustomerServlet extends HttpServlet {
                 allRecords = allRecords + customer;*/
 
                 arrayBuilder.add(object.build());
-                PrintWriter writer = resp.getWriter();
-                writer.print(arrayBuilder.build());
+
             }
+
+
+            PrintWriter writer = resp.getWriter();
+            writer.print(arrayBuilder.build());
             //Output of allRecords for now
             //{id:C001,name:Dasun,address:Galle,salary:1000},{id:C001,name:Dasun,address:Galle,salary:1000},
 
@@ -76,7 +82,7 @@ public class CustomerServlet extends HttpServlet {
             String finalJson = "[" + allRecords.substring(0, allRecords.length() - 1) + "]";
 
             //Then print it as the response
-            PrintWriter writer = resp.getWriter();
+           // PrintWriter writer = resp.getWriter();
             writer.write(finalJson); //Possible response types -> //text //xml //html //json
 
             //            {
@@ -202,7 +208,7 @@ public class CustomerServlet extends HttpServlet {
             e.printStackTrace();
             resp.sendError(500, e.getMessage());
         } catch (SQLException throwables) {
-            throwables.printStackTrace(); 
+            throwables.printStackTrace();
             resp.sendError(500, throwables.getMessage());
         }
     }
