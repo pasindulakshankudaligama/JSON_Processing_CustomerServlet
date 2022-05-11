@@ -152,7 +152,7 @@ public class CustomerServlet extends HttpServlet {
         } catch (SQLException throwables) {
             JsonObjectBuilder response = Json.createObjectBuilder();
             resp.setStatus(HttpServletResponse.SC_OK);
-            response.add("status", 400);
+             response.add("status", 400);
             response.add("message", "Error");
             response.add("data", throwables.getLocalizedMessage());
             throwables.printStackTrace();
@@ -169,6 +169,10 @@ public class CustomerServlet extends HttpServlet {
         //but we can send data via Query String
         String customerID = req.getParameter("CusID");
 
+        PrintWriter writer = resp.getWriter();
+
+        resp.setContentType("application/json");
+
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "sanu");
@@ -176,11 +180,14 @@ public class CustomerServlet extends HttpServlet {
             PreparedStatement pstm = connection.prepareStatement("Delete from Customer where id=?");
             pstm.setObject(1, customerID);
 
-            boolean b = pstm.executeUpdate() > 0;
-            PrintWriter writer = resp.getWriter();
 
-            if (b) {
-                writer.write("Customer Deleted");
+
+            if ( pstm.executeUpdate() > 0) {
+                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+                objectBuilder.add("data","");
+                objectBuilder.add("message", "Successfully Deleted");
+                objectBuilder.add("status", 200);
+                writer.print(objectBuilder.build());
             }
 
             //            {
@@ -189,11 +196,24 @@ public class CustomerServlet extends HttpServlet {
 //                "status":"200"
 //            }
         } catch (ClassNotFoundException e) {
+            JsonObjectBuilder response = Json.createObjectBuilder();
+            resp.setStatus(HttpServletResponse.SC_OK);
+            response.add("status", 400);
+            response.add("message", "Error");
+            response.add("data", e.getLocalizedMessage());
             e.printStackTrace();
-            resp.sendError(500, e.getMessage());
+
+            writer.print(response.build());
+
+          //  resp.sendError(500, e.getMessage());
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-            resp.sendError(500, throwables.getMessage());
+            JsonObjectBuilder response = Json.createObjectBuilder();
+            resp.setStatus(HttpServletResponse.SC_OK);
+            response.add("status", 400);
+            response.add("message", "Error");
+            response.add("data", throwables.getLocalizedMessage());
+           // resp.sendError(500, throwables.getMessage());
         }
 
     }
