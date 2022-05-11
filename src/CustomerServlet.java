@@ -114,6 +114,7 @@ public class CustomerServlet extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         System.out.println(customerID + " " + customerName + " " + customerAddress + " " + salary);
 
+        resp.setContentType("application/json"); // MIME Types (Multipurpose Internet Mail Extensions)
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "ijse");
@@ -127,6 +128,7 @@ public class CustomerServlet extends HttpServlet {
 
             if (pstm.executeUpdate() > 0) {
                 JsonObjectBuilder response = Json.createObjectBuilder();
+                resp.setStatus(HttpServletResponse.SC_CREATED);
                 response.add("status", 200);
                 response.add("message", "Successfully Added");
                 response.add("data", "");
@@ -141,15 +143,16 @@ public class CustomerServlet extends HttpServlet {
         } catch (ClassNotFoundException e) {
             //resp.sendError(500, e.getMessage());
             JsonObjectBuilder response = Json.createObjectBuilder();
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.add("status", 500);
+            resp.setStatus(HttpServletResponse.SC_OK);
+            response.add("status", 400);
             response.add("message", "Error");
             response.add("data", e.getLocalizedMessage());
+
             e.printStackTrace();
         } catch (SQLException throwables) {
             JsonObjectBuilder response = Json.createObjectBuilder();
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.add("status", 500);
+            resp.setStatus(HttpServletResponse.SC_OK);
+            response.add("status", 400);
             response.add("message", "Error");
             response.add("data", throwables.getLocalizedMessage());
             throwables.printStackTrace();
