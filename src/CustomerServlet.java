@@ -1,6 +1,4 @@
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -192,7 +190,7 @@ public class CustomerServlet extends HttpServlet {
                 JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
                 objectBuilder.add("status", 400);
                 objectBuilder.add("data","Wrong Id Inserted");
-                objectBuilder.add("message", "Successfully Deleted");
+                objectBuilder.add("message", "");
 
                 writer.print(objectBuilder.build());
 
@@ -229,10 +227,17 @@ public class CustomerServlet extends HttpServlet {
     //This method can be used to update a customer
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String customerID = req.getParameter("customerID"); // name value from the input field
+      /*  String customerID = req.getParameter("customerID"); // name value from the input field
         String customerName = req.getParameter("customerName");
         String customerAddress = req.getParameter("customerAddress");
-        String customerSalary = req.getParameter("customerSalary");
+        String customerSalary = req.getParameter("customerSalary");*/
+
+        JsonReader reader = Json.createReader(req.getReader());
+        JsonObject jsonObject = reader.readObject();
+        String customerID = jsonObject.getString("id");
+        String customerName = jsonObject.getString("name");
+        String customerAddress = jsonObject.getString("address");
+        String customerSalary = jsonObject.getString("salary");
 
         try {
             Class.forName("com.mysql.jdbc.Driver");

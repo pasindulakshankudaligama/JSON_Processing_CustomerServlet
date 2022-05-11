@@ -130,10 +130,9 @@
 
     //Update customer
     $("#btnUpdateCustomer").click(function () {
-        let formData = $("#customerForm").serialize();
-        console.log(formData);
+
         $.ajax({
-            url: "customer?" + formData,
+            url: "customer",
             method: "PUT",
             // data:formData,
             success: function (res) {
