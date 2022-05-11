@@ -188,6 +188,14 @@ public class CustomerServlet extends HttpServlet {
                 objectBuilder.add("message", "Successfully Deleted");
                 objectBuilder.add("status", 200);
                 writer.print(objectBuilder.build());
+            }else{
+                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+                objectBuilder.add("status", 400);
+                objectBuilder.add("data","Wrong Id Inserted");
+                objectBuilder.add("message", "Successfully Deleted");
+
+                writer.print(objectBuilder.build());
+
             }
 
             //            {
