@@ -239,6 +239,10 @@ public class CustomerServlet extends HttpServlet {
         String customerAddress = jsonObject.getString("address");
         String customerSalary = jsonObject.getString("salary");
 
+        PrintWriter writer = resp.getWriter();
+
+        resp.setContentType("application/json");
+
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "sanu");
@@ -248,11 +252,21 @@ public class CustomerServlet extends HttpServlet {
             pstm.setObject(2, customerAddress);
             pstm.setObject(3, customerSalary);
             pstm.setObject(4, customerID);
-            boolean b = pstm.executeUpdate() > 0;
-            PrintWriter writer = resp.getWriter();
 
-            if (b) {
-                writer.write("Customer Updated");
+
+
+            if (pstm.executeUpdate() > 0) {
+                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+                objectBuilder.add("status",200);
+                objectBuilder.add("message","Successfully Updated");
+                objectBuilder.add("data","");
+                writer.print(objectBuilder.build());
+            }else {
+                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+                objectBuilder.add("status",400);
+                objectBuilder.add("message","Update Failed");
+                objectBuilder.add("data","");
+                writer.print(objectBuilder.build());
             }
             //            {
 //                "data": "",
@@ -261,11 +275,22 @@ public class CustomerServlet extends HttpServlet {
 //            }
 
         } catch (ClassNotFoundException e) {
+            JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+            objectBuilder.add("status",500);
+            objectBuilder.add("message","Update Failed");
+            objectBuilder.add("data",e.getLocalizedMessage());
+            writer.print(objectBuilder.build());
             e.printStackTrace();
-            resp.sendError(500, e.getMessage());
+         /*   resp.sendError(500, e.getMessage());*/
+
         } catch (SQLException throwables) {
+            JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+            objectBuilder.add("status",500);
+            objectBuilder.add("message","Update Failed");
+            objectBuilder.add("data",throwables.getLocalizedMessage());
+            writer.print(objectBuilder.build());
             throwables.printStackTrace();
-            resp.sendError(500, throwables.getMessage());
+           // resp.sendError(500, throwables.getMessage());
         }
     }
 }
