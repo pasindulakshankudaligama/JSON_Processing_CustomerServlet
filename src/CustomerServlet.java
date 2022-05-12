@@ -22,17 +22,22 @@ public class CustomerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         try {
+            String option = req.getParameter("option");
             //The Media Type of the Content of the response
             resp.setContentType("application/json"); // MIME Types (Multipurpose Internet Mail Extensions)
-
-            //meta data for response from headers
-            resp.addHeader("Institute", "IJSE");
-            resp.addHeader("Course", "GDSE");
-
 
             //Initialize the connection
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "ijse");
+            PrintWriter writer = resp.getWriter();
+
+        switch (option){
+            case "SEARCH":
+
+
+
+                break;
+            case "GETALL":
             ResultSet rst = connection.prepareStatement("select * from Customer").executeQuery();
             String allRecords = "";
 
@@ -68,7 +73,7 @@ public class CustomerServlet extends HttpServlet {
             }
 
 
-            PrintWriter writer = resp.getWriter();
+
 
             JsonObjectBuilder response = Json.createObjectBuilder();
             response.add("status", "200");
@@ -94,6 +99,11 @@ public class CustomerServlet extends HttpServlet {
 //                "message":"Done",
 //                "status":"200"
 //            }
+
+
+                break;
+        }
+
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException throwables) {

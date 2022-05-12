@@ -141,7 +141,7 @@
             url: "customer",
             method: "PUT",
             contentType: "application/json",
-            data:JSON.stringify(cusOb),
+            data:JSON.stringify(cusOb ),
             success: function (res) {
                 if (res.status == 200) {
                     alert(res.message);
@@ -165,7 +165,7 @@
     function loadAllCustomers() {
         $("#tblCustomerJson").empty();
         $.ajax({
-            url: "customer",
+            url: "customer?option=GETALL",
             method: "GET",
             // dataType:"json", // please convert the response into JSON
             success: function (resp) {
